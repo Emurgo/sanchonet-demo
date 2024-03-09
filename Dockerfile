@@ -7,7 +7,7 @@ RUN echo "deb [arch=all,$(dpkg --print-architecture) signed-by=/usr/share/keyrin
 RUN apt-get update -y \
     && apt-get install -y just \
     && apt-get clean
-RUN sh <(curl -L https://nixos.org/nix/install) --daemon
+RUN curl -L https://nixos.org/nix/install | sh -s -- --daemon
 ENV PATH="/root/.cabal/bin:/root/.local/bin:$PATH"
 RUN cd sanchonet-demo
 RUN direnv allow
