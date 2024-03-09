@@ -1,4 +1,7 @@
 FROM --platform=linux/amd64 debian:stable-slim as build
+RUN apt-get update -y \
+    && apt-get install -y git jq curl \
+    && apt-get clean
 RUN git clone https://mpr.makedeb.org/just
 RUN cd just
 RUN makedeb -si
