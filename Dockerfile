@@ -1,7 +1,8 @@
 FROM --platform=linux/amd64 debian:stable-slim as build
 RUN apt-get update -y \
-    && apt-get install -y git jq curl wget snapd core \
+    && apt-get install -y git jq curl wget snapd \
     && apt-get clean
+RUN snap install core
 RUN snap install just --edge --classic
 RUN which just
 RUN sh <(curl -L https://nixos.org/nix/install) --daemon
