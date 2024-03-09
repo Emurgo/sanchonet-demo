@@ -2,6 +2,8 @@ FROM ubuntu:22.04
 RUN apt-get update -y \
     && apt-get install -y git jq curl wget snapd \
     && apt-get clean
+RUN echo "[boot] \
+systemd=true" > /etc/wsl.conf
 RUN systemctl start snapd.service
 RUN snap install just --edge --classic
 RUN which just
