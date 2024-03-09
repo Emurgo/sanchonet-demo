@@ -10,5 +10,6 @@ RUN apt-get update -y \
 RUN curl -L https://nixos.org/nix/install | sh -s -- --daemon
 RUN curl -sfL https://direnv.net/install.sh | bash
 ENV PATH="/root/.cabal/bin:/root/.local/bin:/usr/local/sbin:$PATH"
+COPY . .
 RUN direnv allow
 RUN just run-demo
