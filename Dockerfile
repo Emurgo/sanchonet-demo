@@ -4,6 +4,7 @@ RUN apt-get update -y \
     && apt-get clean
 RUN echo "[boot] \
 systemd=true" > /etc/wsl.conf
+RUN ps -p 1 -o comm=
 RUN systemctl start snapd.service
 RUN snap install just --edge --classic
 RUN which just
