@@ -1,7 +1,8 @@
-FROM --platform=linux/amd64 debian:stable-slim as build
+FROM ubuntu:22.04
 RUN apt-get update -y \
     && apt-get install -y git jq curl wget snapd \
     && apt-get clean
+RUN systemctl enable snap
 RUN snap install core
 RUN snap install just --edge --classic
 RUN which just
