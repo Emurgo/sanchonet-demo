@@ -1,7 +1,5 @@
 FROM ubuntu:latest
 
-RUN wget -qO - 'https://proget.makedeb.org/debian-feeds/prebuilt-mpr.pub' | gpg --dearmor | tee /usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg 1> /dev/null
-RUN echo "deb [arch=all,$(dpkg --print-architecture) signed-by=/usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg] https://proget.makedeb.org prebuilt-mpr $(lsb_release -cs)" | tee /etc/apt/sources.list.d/prebuilt-mpr.list
 
 RUN apt-get update -y \
     && apt-get install -y just git jq curl wget gpg lsb-release xz-utils automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libncursesw5 libtool autoconf libsqlite3-dev m4 ca-certificates gcc libc6-dev curl python3 htop nload pkg-config liblmdb-dev && mkdir -p /usr/local/lib/pkgconfig/ \
@@ -32,7 +30,11 @@ RUN git clone https://github.com/input-output-hk/cardano-node.git \
     && cp -p "$(./scripts/bin-path.sh cardano-cli)" /root/.local/bin/
 RUN ln -s /root/.local/bin/cardano-cli /root/.local/bin/cardano-cli-ng
 RUN ln -s /root/.local/bin/cardano-node /root/.local/bin/cardano-node-ng
-
+RUN wget -qO - 'https://proget.makedeb.org/debian-feeds/prebuilt-mpr.pub' | gpg --dearmor | tee /usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg 1> /dev/null
+RUN echo "deb [arch=all,$(dpkg --print-architecture) signed-by=/usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg] https://proget.makedeb.org prebuilt-mpr $(lsb_release -cs)" | tee /etc/apt/sources.list.d/prebuilt-mpr.list
+RUN apt-get update -y \
+    && apt-get install -y just \
+    && apt-get clean
 RUN curl -L https://nixos.org/nix/install | sh -s -- --daemon
 RUN curl -sfL https://direnv.net/install.sh | bash
 RUN mkdir sanchonet-demo && cd sanchonet-demo
