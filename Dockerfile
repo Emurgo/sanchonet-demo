@@ -22,8 +22,8 @@ RUN git clone https://github.com/input-output-hk/cardano-node.git \
     && echo "  flags: -external-libsodium-vrf" >>  cabal.project.local \
     && cabal build all \
     && mkdir -p /root/.local/bin/ \
-    && cp -p dist-newstyle/build/x86_64-linux/ghc-8.10.7/cardano-node-*/x/cardano-node/build/cardano-node/cardano-node /root/.local/bin/ \
-    && cp -p dist-newstyle/build/x86_64-linux/ghc-8.10.7/cardano-cli-*/x/cardano-cli/build/cardano-cli/cardano-cli /root/.local/bin/ 
+    && cp -p "$(./scripts/bin-path.sh cardano-node)" /root/.local/bin/ \
+    && cp -p "$(./scripts/bin-path.sh cardano-cli)" /root/.local/bin/
 RUN ln -s /root/.local/bin/cardano-cli /root/.local/bin/cardano-cli-ng
 RUN ln -s /root/.local/bin/cardano-node /root/.local/bin/cardano-node-ng
 
