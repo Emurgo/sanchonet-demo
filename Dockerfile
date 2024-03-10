@@ -15,7 +15,6 @@ RUN echo "Building tags/$VERSION..."
 RUN touch cabal.project.local
 RUN git clone https://github.com/input-output-hk/cardano-node.git
 RUN cd cardano-node
-RUN git fetch --all --recurse-submodules --tags
 RUN git checkout $(curl -s https://api.github.com/repos/IntersectMBO/cardano-node/releases/latest | jq -r .tag_name)
 RUN cabal update \
     && cabal configure --with-compiler=ghc-8.10.7 \
@@ -35,6 +34,7 @@ RUN apt-get update -y \
     && apt-get clean
 RUN curl -L https://nixos.org/nix/install | sh -s -- --daemon
 RUN curl -sfL https://direnv.net/install.sh | bash
+RUN mkdir sanchonet-demo && cd sanchonet-demo
 COPY . .
 RUN direnv allow
 RUN which nix cardano-cli
