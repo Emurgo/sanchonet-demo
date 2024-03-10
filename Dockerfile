@@ -13,10 +13,9 @@ ENV LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH" \
     PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH"
 RUN echo "Building tags/$VERSION..." 
 RUN touch cabal.project.local
-RUN git clone https://github.com/input-output-hk/cardano-node.git
-RUN cd cardano-node
-RUN git checkout $(curl -s https://api.github.com/repos/IntersectMBO/cardano-node/releases/latest | jq -r .tag_name)
-RUN cabal update \
+RUN git clone https://github.com/input-output-hk/cardano-node.git && cd cardano-node && git checkout $(curl -s https://api.github.com/repos/IntersectMBO/cardano-node/releases/latest | jq -r .tag_name)
+RUN cd /root/cardano-node \ 
+    && cabal update \
     && cabal configure --with-compiler=ghc-8.10.7 \
     && echo "package cardano-crypto-praos" >>  cabal.project.local \
     && echo "  flags: -external-libsodium-vrf" >>  cabal.project.local \
