@@ -46,4 +46,4 @@ RUN echo  'build-users-group = nixbld \n \
 RUN which nix-shell
 COPY . .
 RUN direnv allow
-RUN just run-demo
+ENTRYPOINT  just run-demo
