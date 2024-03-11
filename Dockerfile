@@ -37,7 +37,7 @@ RUN apt-get update -y \
     && apt-get install -y just \
     && apt-get clean
 RUN curl -L https://nixos.org/nix/install | sh -s -- --daemon
-RUN curl -sfL https://direnv.net/install.sh | 
+RUN curl -sfL https://direnv.net/install.sh | bash
 RUN touch /etc/nix/nix.conf
 RUN echo -e '\
  build-users-group = nixbld \n\
