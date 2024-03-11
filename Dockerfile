@@ -41,5 +41,5 @@ RUN curl -sfL https://direnv.net/install.sh | bash
 RUN mkdir sanchonet-demo && cd sanchonet-demo
 COPY . .
 RUN direnv allow
-RUN which nix cardano-cli
+RUN which cardano-cli
 RUN just run-demo
