@@ -27,8 +27,8 @@ RUN git clone https://github.com/input-output-hk/cardano-node.git \
     && cabal build all \
     && mkdir -p /root/.local/bin/ \
     && ls -ltr /cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.10.7/cardano-node-*/x \
-    && find /cardano-node/dist-newstyle -name cardano-cli
-    && cp -p /cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.10.7/cardano-node-*/x/cardano-node/build/cardano-node/cardano-node /root/.local/bin/ \
+    && find /cardano-node/dist-newstyle -name cardano-cli \
+    && cp -p /cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.10.7/cardano-node-*/x/cardano-node/build/cardano-node/cardano-node /root/.local/bin/ 
 RUN ln -s /root/.local/bin/cardano-cli /root/.local/bin/cardano-cli-ng
 RUN ln -s /root/.local/bin/cardano-node /root/.local/bin/cardano-node-ng
 RUN wget -qO - 'https://proget.makedeb.org/debian-feeds/prebuilt-mpr.pub' | gpg --dearmor | tee /usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg 1> /dev/null
