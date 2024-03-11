@@ -43,7 +43,8 @@ RUN echo  'build-users-group = nixbld \n \
  experimental-features = nix-command \n \
  extra-experimental-features = flakes \n \
  extra-experimental-features = fetch-closure'  >> /etc/nix/nix.conf
-RUN which nix-shell
+RUN mkdir /root/sanchonet-demo
+WORKDIR /root/sanchonet-demo
 COPY . .
 RUN direnv allow
 ENTRYPOINT  just run-demo
