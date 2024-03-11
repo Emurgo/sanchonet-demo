@@ -37,9 +37,14 @@ RUN apt-get update -y \
     && apt-get install -y just \
     && apt-get clean
 RUN curl -L https://nixos.org/nix/install | sh -s -- --daemon
-RUN curl -sfL https://direnv.net/install.sh | bash
+RUN curl -sfL https://direnv.net/install.sh | 
+RUN touch /etc/nix/nix.conf
+RUN echo -e '\
+ build-users-group = nixbld \n\
+ experimental-features = nix-command \n\
+ extra-experimental-features = flakes \n\
+ extra-experimental-features = fetch-closure'\ >> /etc/nix/nix.conf
 RUN mkdir sanchonet-demo && cd sanchonet-demo
 COPY . .
 RUN direnv allow
-RUN which cardano-cli
 RUN just run-demo
