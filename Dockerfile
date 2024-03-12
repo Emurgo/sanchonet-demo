@@ -45,6 +45,7 @@ RUN echo  'build-users-group = nixbld \n \
  extra-experimental-features = fetch-closure'  >> /etc/nix/nix.conf
 RUN mkdir /root/sanchonet-demo
 WORKDIR /root/sanchonet-demo
+RUN mkdir ipc
 COPY . .
 RUN direnv allow
 ENTRYPOINT  just run-demo
