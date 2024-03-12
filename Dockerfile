@@ -48,4 +48,4 @@ WORKDIR /root/sanchonet-demo
 RUN mkdir ipc
 COPY . .
 RUN direnv allow
-ENTRYPOINT  just run-demo
+CMD  just run-demo
