@@ -17,7 +17,7 @@
       test = {
         enableVars = true;
         defaultVars = {
-          CARDANO_NODE_SOCKET_PATH = "./node.socket";
+          CARDANO_NODE_SOCKET_PATH = "./ipc/node.socket";
           USE_ENCRYPTION = false;
           UNSTABLE = true;
         };
