@@ -21,7 +21,7 @@
           USE_ENCRYPTION = false;
           UNSTABLE = true;
         };
-        extraPkgs = [config.packages.run-cardano-node pkgs.asciinema pkgs.fx];
+        extraPkgs = [config.packages.run-cardano-node pkgs.asciinema pkgs.fx pkgs.coreutils];
       };
     };
     #cardano-parts.pkgs.cardano-cli = flake.inputs.cardano-cli-ng.legacyPackages.${system}.cardano-cli;
