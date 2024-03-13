@@ -11,7 +11,8 @@ RUN echo  'build-users-group = nixbld \n \
  extra-experimental-features = fetch-closure'  >> /etc/nix/nix.conf
 RUN mkdir /root/sanchonet-demo
 WORKDIR /root/sanchonet-demo
-RUN nix flake update --extra-experimental-features nix-command
+RUN cat /etc/nix/nix.conf
+RUN nix flake update --extra-experimental-features nix-command --extra-experimental-features flakes
 COPY . .
 RUN direnv allow
 CMD  just run-demo
