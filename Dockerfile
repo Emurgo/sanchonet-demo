@@ -11,7 +11,7 @@ RUN echo -e 'experimental-features = nix-command \n \
 RUN mkdir /root/sanchonet-demo
 WORKDIR /root/sanchonet-demo
 RUN cat /etc/nix/nix.conf
-RUN nix flake update
 COPY . .
+RUN nix flake update
 RUN direnv allow
 CMD  just run-demo
