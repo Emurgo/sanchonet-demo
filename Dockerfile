@@ -1,6 +1,6 @@
 FROM nixos/nix
-ENV PATH="/root/.cabal/bin:/root/.ghcup/bin:/root/.local/bin:/root/.nix-profile/bin:$PATH"
-RUN curl -sfL https://direnv.net/install.sh | bash
+ENV PATH="/root/.cabal/bin:/root/.ghcup/bin:/root/.local/bin:/root/.nix-profile/bin/direnv:/root/.nix-profile/bin:$PATH"
+RUN nix-env -iA nixpkgs.direnv
 RUN nix-env -iA nixpkgs.just
 RUN touch /etc/nix/nix.conf
 RUN echo  'build-users-group = nixbld \n \
