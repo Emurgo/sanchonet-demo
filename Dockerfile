@@ -4,15 +4,14 @@ RUN nix-env -iA nixpkgs.direnv
 RUN nix-env -iA nixpkgs.just
 RUN nix-env -iA nixpkgs.jq
 RUN touch /etc/nix/nix.conf
-RUN echo  'build-users-group = nixbld \n \
- experimental-features = nix-command \n \
+RUN echo -e 'experimental-features = nix-command \n \
  extra-experimental-features = flakes \n \
  extra-experimental-features = nix-command \n \
- extra-experimental-features = fetch-closure'  >> /etc/nix/nix.conf
+ extra-experimental-features = fetch-closure'  >> /etc/nix/nix.conf-1
 RUN mkdir /root/sanchonet-demo
 WORKDIR /root/sanchonet-demo
 RUN cat /etc/nix/nix.conf
-RUN nix flake update --extra-experimental-features nix-command --extra-experimental-features flakes
+RUN nix flake update
 COPY . .
 RUN direnv allow
 CMD  just run-demo
