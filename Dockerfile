@@ -7,6 +7,7 @@ RUN touch /etc/nix/nix.conf
 RUN echo  'build-users-group = nixbld \n \
  experimental-features = nix-command \n \
  extra-experimental-features = flakes \n \
+ extra-experimental-features = nix-command \n \
  extra-experimental-features = fetch-closure'  >> /etc/nix/nix.conf
 RUN mkdir /root/sanchonet-demo
 WORKDIR /root/sanchonet-demo
