@@ -40,7 +40,7 @@ run-demo:
   export PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo
   export STAKE_POOL_DIR=state-demo/stake-pools
   SECURITY_PARAM=8 SLOT_LENGTH=100 START_TIME=$(date --utc +"%Y-%m-%dT%H:%M:%SZ" --date " now + 30 seconds") nix run .#job-gen-custom-node-config
-  export PAYMENT_ADDRESS=$(cardano-cli-ng address build --testnet-magic 42 --payment-verification-key-file "$PAYMENT_KEY".vkey)
+  export PAYMENT_ADDRESS=$(cardano-cli address build --testnet-magic 42 --payment-verification-key-file "$PAYMENT_KEY".vkey)
   echo "generating stake pools credentials..."
   nix run .#job-create-stake-pool-keys
   (
@@ -79,31 +79,31 @@ run-demo:
   sleep 10
   just vote-cc
   sleep 160
-  cardano-cli-ng conway query gov-state --testnet-magic 42|jq .enactState.committee
+  cardano-cli conway query gov-state --testnet-magic 42|jq .enactState.committee
 
 vote-constitution:
   #!/usr/bin/env bash
   export KEY_DIR="state-demo/envs/custom"
   echo "Checking Constitution Hash..."
   echo -e "\n\n"
-  cardano-cli-ng conway query constitution --testnet-magic 42
+  cardano-cli conway query constitution --testnet-magic 42
   echo -e "\n\n"
   echo "Submitting change to constitution..."
   echo -e "\n\n"
   sleep 2
-  ACTION=create-constitution GOV_ACTION_DEPOSIT=1000000000 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo STAKE_KEY=state-demo/stake-pools/no-deploy/sancho1-owner-stake TESTNET_MAGIC=42 nix run .#job-submit-gov-action -- "--constitution-hash" "$(cardano-cli-ng conway governance hash anchor-data --text "We the people of Barataria abide by these statutes: 1. Flat Caps are permissible, but cowboy hats are the traditional atire")" "--constitution-url" "https://proposals.sancho.network/1"
+  ACTION=create-constitution GOV_ACTION_DEPOSIT=1000000000 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo STAKE_KEY=state-demo/stake-pools/no-deploy/sancho1-owner-stake TESTNET_MAGIC=42 nix run .#job-submit-gov-action -- "--constitution-hash" "$(cardano-cli conway governance hash anchor-data --text "We the people of Barataria abide by these statutes: 1. Flat Caps are permissible, but cowboy hats are the traditional atire")" "--constitution-url" "https://proposals.sancho.network/1"
   sleep 10
   echo -e "\n\n"
   echo "Voting Unanimous with dreps"
   echo -e "\n\n"
   sleep 5
-  just submit-vote-drep $(cardano-cli-ng transaction txid --tx-body-file tx-create-constitution.txbody) 0 yes
+  just submit-vote-drep $(cardano-cli transaction txid --tx-body-file tx-create-constitution.txbody) 0 yes
   sleep 10
   echo "Voting Unanimous with CC"
-  just submit-vote-cc $(cardano-cli-ng transaction txid --tx-body-file tx-create-constitution.txbody) 0 yes
+  just submit-vote-cc $(cardano-cli transaction txid --tx-body-file tx-create-constitution.txbody) 0 yes
   sleep 230
   echo "Checking Constitution Hash..."
-  cardano-cli-ng conway query constitution --testnet-magic 42
+  cardano-cli conway query constitution --testnet-magic 42
 
 vote-treasury:
   #!/usr/bin/env bash
@@ -112,24 +112,24 @@ vote-treasury:
   echo -e "\n\n"
   sleep 2
   ACTION=create-treasury-withdrawal GOV_ACTION_DEPOSIT=1000000000 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo STAKE_KEY=state-demo/stake-pools/no-deploy/sancho1-owner-stake TESTNET_MAGIC=42 nix run .#job-submit-gov-action -- --funds-receiving-stake-verification-key-file state-demo/dreps/stake-1.vkey --transfer 5000000
-  STAKE_ADDRESS=$(cardano-cli-ng stake-address build --testnet-magic 42 --stake-verification-key-file state-demo/dreps/stake-1.vkey)
+  STAKE_ADDRESS=$(cardano-cli stake-address build --testnet-magic 42 --stake-verification-key-file state-demo/dreps/stake-1.vkey)
   sleep 10
   echo -e "\n\n"
   echo "Voting Unanimous with dreps"
   echo -e "\n\n"
   sleep 5
-  just submit-vote-drep $(cardano-cli-ng transaction txid --tx-body-file tx-create-treasury-withdrawal.txbody) 0 yes
+  just submit-vote-drep $(cardano-cli transaction txid --tx-body-file tx-create-treasury-withdrawal.txbody) 0 yes
   sleep 5
   echo "Voting Unanimous with CC"
-  just submit-vote-cc $(cardano-cli-ng transaction txid --tx-body-file tx-create-treasury-withdrawal.txbody) 0 yes
+  just submit-vote-cc $(cardano-cli transaction txid --tx-body-file tx-create-treasury-withdrawal.txbody) 0 yes
   sleep 230
-  cardano-cli-ng conway query stake-address-info --testnet-magic 42 --address "$STAKE_ADDRESS"
+  cardano-cli conway query stake-address-info --testnet-magic 42 --address "$STAKE_ADDRESS"
 
 check-stake-drep:
   #!/usr/bin/env bash
   export KEY_DIR="state-demo/envs/custom"
-  STAKE=$(cardano-cli-ng stake-address build --stake-verification-key-file state-demo/dreps/stake-1.vkey --testnet-magic 42)
-  cardano-cli-ng conway query stake-address-info --testnet-magic 42 --address "$STAKE"
+  STAKE=$(cardano-cli stake-address build --stake-verification-key-file state-demo/dreps/stake-1.vkey --testnet-magic 42)
+  cardano-cli conway query stake-address-info --testnet-magic 42 --address "$STAKE"
 
 vote-cc:
   #!/usr/bin/env bash
@@ -145,9 +145,9 @@ vote-cc:
   echo -e "\n\n"
   echo "Voting Unanimous with dreps"
   echo -e "\n\n"
-  just submit-vote-drep $(cardano-cli-ng transaction txid --tx-body-file tx-update-committee.txbody) 0 yes
+  just submit-vote-drep $(cardano-cli transaction txid --tx-body-file tx-update-committee.txbody) 0 yes
   sleep 10
-  just submit-vote-spo $(cardano-cli-ng transaction txid --tx-body-file tx-update-committee.txbody) 0 yes
+  just submit-vote-spo $(cardano-cli transaction txid --tx-body-file tx-update-committee.txbody) 0 yes
   sleep 180
   CC_DIR=state-demo/cc INDEX=1 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo TESTNET_MAGIC=42 nix run .#job-register-cc
 
@@ -156,19 +156,19 @@ vote-k:
   export KEY_DIR="state-demo/envs/custom"
   echo "Submitting k -> 1000..."
   echo -e "\n\n"
-  echo "k: $(cardano-cli-ng conway query protocol-parameters --testnet-magic 42|jq .stakePoolTargetNum)"
+  echo "k: $(cardano-cli conway query protocol-parameters --testnet-magic 42|jq .stakePoolTargetNum)"
   sleep 10
   ACTION=create-protocol-parameters-update GOV_ACTION_DEPOSIT=1000000000 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo STAKE_KEY=state-demo/stake-pools/no-deploy/sancho1-owner-stake TESTNET_MAGIC=42 nix run .#job-submit-gov-action -- --number-of-pools 1000
   sleep 20
   echo -e "\n\n"
   echo "Voting Unanimous with dreps"
   echo -e "\n\n"
-  just submit-vote-drep $(cardano-cli-ng transaction txid --tx-body-file tx-create-protocol-parameters-update.txbody) 0 yes
+  just submit-vote-drep $(cardano-cli transaction txid --tx-body-file tx-create-protocol-parameters-update.txbody) 0 yes
   sleep 10
   echo "Voting Unanimous with CC"
-  just submit-vote-cc $(cardano-cli-ng transaction txid --tx-body-file tx-create-protocol-parameters-update.txbody) 0 yes
+  just submit-vote-cc $(cardano-cli transaction txid --tx-body-file tx-create-protocol-parameters-update.txbody) 0 yes
   sleep 230
-  echo "k: $(cardano-cli-ng conway query protocol-parameters --testnet-magic 42|jq .stakePoolTargetNum)"
+  echo "k: $(cardano-cli conway query protocol-parameters --testnet-magic 42|jq .stakePoolTargetNum)"
 
 stop:
   #!/usr/bin/env bash
@@ -183,15 +183,15 @@ start:
   DATA_DIR=state-demo NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./node.socket nohup nix run .#run-cardano-node & echo $! > cardano.pid &
 
 sync-status:
-  cardano-cli-ng query tip --testnet-magic 42
+  cardano-cli query tip --testnet-magic 42
 
 query-rich-utxo:
   #!/usr/bin/env bash
-  cardano-cli-ng query utxo --testnet-magic 42 --address $(cardano-cli address build --testnet-magic 42 --payment-verification-key-file "$KEY_DIR"/utxo-keys/rich-utxo.vkey)
+  cardano-cli query utxo --testnet-magic 42 --address $(cardano-cli address build --testnet-magic 42 --payment-verification-key-file "$KEY_DIR"/utxo-keys/rich-utxo.vkey)
 
 query-gov-status:
   #!/usr/bin/env bash
-  cardano-cli-ng query governance ...
+  cardano-cli query governance ...
 
 
 submit-vote-spo actiontx actionid decision:
@@ -247,4 +247,4 @@ demo-drep:
   #!/usr/bin/env bash
   export KEY_DIR="state-demo/envs/custom"
   just submit-action
-  ACTIONTX=$(cardano-cli-ng transaction txid --tx-file
+  ACTIONTX=$(cardano-cli transaction txid --tx-file
