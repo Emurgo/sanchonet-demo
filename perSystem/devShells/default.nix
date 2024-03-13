@@ -6,7 +6,7 @@
   }: {
     cardano-parts.shell = {
       global = {
-        defaultShell = "bash";
+        defaultShell = "test";
         enableVars = false;
         defaultHooks = ''
           # CURRENTLY BROKEN!
