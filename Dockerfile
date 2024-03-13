@@ -7,11 +7,11 @@ RUN touch /etc/nix/nix.conf
 RUN echo -e 'experimental-features = nix-command \n \
  extra-experimental-features = flakes \n \
  extra-experimental-features = nix-command \n \
- extra-experimental-features = fetch-closure'  >> /etc/nix/nix.conf-1
+ extra-experimental-features = fetch-closure'  >> /etc/nix/nix.conf
 RUN mkdir /root/sanchonet-demo
 WORKDIR /root/sanchonet-demo
 RUN cat /etc/nix/nix.conf
 COPY . .
-RUN nix flake update
+RUN nix flake update --extra-experimental-features nix-command --extra-experimental-features = flakes
 RUN direnv allow
 CMD  just run-demo
