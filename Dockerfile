@@ -13,5 +13,6 @@ WORKDIR /root/sanchonet-demo
 RUN cat /etc/nix/nix.conf
 COPY . .
 RUN nix flake update --extra-experimental-features nix-command --extra-experimental-features = flakes
+RUN ln -s /root/.local/bin/cardano-cli /root/.local/bin/cardano-cli-ng
 RUN direnv allow
 CMD  just run-demo
