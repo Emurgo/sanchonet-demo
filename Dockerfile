@@ -16,4 +16,4 @@ RUN nix build .#cardano-node-ng -o cardano-node-ng-build
 RUN nix build .#cardano-cli -o cardano-cli-build
 ENV PATH="/root/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/root/cardano-cli-ng-build/bin:/root/cardano-node-ng-build/bin:/root/cardano-cli-build/bin$PATH"
 RUN direnv allow
-ENTRYPOINT just run-demo
+CMD nohup just run-demo &
