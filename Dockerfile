@@ -10,4 +10,4 @@ WORKDIR /root/sanchonet-demo
 RUN cat /etc/nix/nix.conf
 COPY . .
 RUN direnv allow
-CMD just run-demo
+RUN just run-demo
