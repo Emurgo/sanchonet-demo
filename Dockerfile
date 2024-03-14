@@ -9,6 +9,5 @@ RUN mkdir /root/sanchonet-demo
 WORKDIR /root/sanchonet-demo
 RUN cat /etc/nix/nix.conf
 COPY . .
-RUN nix build 
 RUN direnv allow
 CMD just run-demo
