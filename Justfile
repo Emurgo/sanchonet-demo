@@ -49,8 +49,8 @@ run-demo:
   ) | jq -s > "$BULK_CREDS"
   cp "$STAKE_POOL_DIR"/no-deploy/*.skey "$STAKE_POOL_DIR"/deploy/*.vkey "$STAKE_POOL_DIR"
   echo "start cardano-node in the background. Run \"just stop\" to stop"
-  NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./node.socket nohup nix run .#run-cardano-node & echo $! > cardano.pid &
-  sleep 30
+  NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./node.socket nix run .#run-cardano-node & echo $! > cardano.pid &
+  sleep 300
   echo "moving genesis utxo..."
   sleep 1
   BYRON_SIGNING_KEY="$KEY_DIR"/utxo-keys/shelley.000.skey ERA_CMD="alonzo" nix run .#job-move-genesis-utxo
@@ -180,7 +180,7 @@ stop:
 start:
   #!/usr/bin/env bash
   export BULK_CREDS=state-demo/bulk-creds.json
-  DATA_DIR=state-demo NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./node.socket nohup nix run .#run-cardano-node & echo $! > cardano.pid &
+  DATA_DIR=state-demo NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./node.socket nix run .#run-cardano-node & echo $! > cardano.pid &
 
 sync-status:
   cardano-cli-ng query tip --testnet-magic 42
