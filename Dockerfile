@@ -4,10 +4,10 @@ RUN nix-env -iA nixpkgs.just
 RUN nix-env -iA nixpkgs.jq
 RUN touch /etc/nix/nix.conf
 RUN mkdir -p /etc/nix
-RUN echo "experimental-features = nix-command flakes" > /etc/nix/nix.conf && echo "allow-import-from-derivation = true" >> /etc/nix/nix.conf && echo "extra-experimental-features = fetch-closure" >> /etc/nix/nix.conf 
+RUN echo "system = x86_64-darwin" >  /etc/nix/nix.conf && echo "extra-platforms = x86_64-darwin aarch64-darwin" >> /etc/nix/nix.conf && echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf && echo "allow-import-from-derivation = true" >> /etc/nix/nix.conf && echo "extra-experimental-features = fetch-closure" >> /etc/nix/nix.conf 
 RUN mkdir /root/sanchonet-demo
 WORKDIR /root/sanchonet-demo
 RUN cat /etc/nix/nix.conf
 COPY . .
 RUN direnv allow
-RUN just run-demo
+ENTRYPOINT just run-demo
