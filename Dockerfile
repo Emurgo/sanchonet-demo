@@ -3,7 +3,6 @@ RUN nix-env -iA nixpkgs.direnv
 RUN nix-env -iA nixpkgs.just
 RUN nix-env -iA nixpkgs.jq
 RUN nix-env -iA nixpkgs.ps
-RUN nix-env -iA nixpkgs.net-tools
 RUN mkdir -p /etc/nix
 RUN touch /etc/nix/nix.conf
 RUN echo "experimental-features = nix-command flakes" > /etc/nix/nix.conf && echo "allow-import-from-derivation = true" >> /etc/nix/nix.conf && echo "extra-experimental-features = fetch-closure" >> /etc/nix/nix.conf 
