@@ -1,5 +1,4 @@
-FROM nixos/nix
-ENV PATH="/root/.cabal/bin:/root/.ghcup/bin:/root/.local/bin:/root/.nix-profile/bin/direnv:/root/.nix-profile/bin:$PATH"
+FROM nixos/nix:latest AS builder
 RUN nix-env -iA nixpkgs.direnv
 RUN nix-env -iA nixpkgs.just
 RUN nix-env -iA nixpkgs.jq
