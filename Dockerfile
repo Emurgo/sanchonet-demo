@@ -17,4 +17,5 @@ RUN nix build .#cardano-cli -o cardano-cli-build
 ENV PATH="/root/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/root/sanchonet-demo/cardano-cli-ng-build/bin:/root/sanchonet-demo/cardano-node-ng-build/bin:/root/sanchonet-demo/cardano-cli-build/bin$PATH"
 RUN direnv allow
 RUN just run-demo
+RUN sleep 30
 ENTRYPOINT ["nix", "run" ,".#run-cardano-node" ,"&" ,"echo", "$!" ,">" ,"cardano.pid"] 
