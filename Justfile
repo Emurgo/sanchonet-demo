@@ -39,7 +39,9 @@ run-demo:
   export BULK_CREDS=state-demo/bulk-creds.json
   export PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo
   export STAKE_POOL_DIR=state-demo/stake-pools
+  echo "generating custom node config"
   SECURITY_PARAM=8 SLOT_LENGTH=100 START_TIME=$(date --utc +"%Y-%m-%dT%H:%M:%SZ" --date " now + 30 seconds") nix run .#job-gen-custom-node-config
+  echo "generating payment key"
   export PAYMENT_ADDRESS=$(cardano-cli-ng address build --testnet-magic 42 --payment-verification-key-file "$PAYMENT_KEY".vkey)
   echo "generating stake pools credentials..."
   nix run .#job-create-stake-pool-keys
