@@ -178,7 +178,7 @@ stop:
 start:
   #!/usr/bin/env bash
   export BULK_CREDS=state-demo/bulk-creds.json
-  DATA_DIR=state-demo NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./ipc/node.socket nohup nix run 2>&1 sd.out .#run-cardano-node & echo $! > cardano.pid &
+  DATA_DIR=state-demo NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./ipc/node.socket nohup nix run .#run-cardano-node & echo $! > cardano.pid &
 
 sync-status:
   cardano-cli-ng query tip --testnet-magic 42
