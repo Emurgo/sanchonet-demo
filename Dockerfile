@@ -5,6 +5,7 @@ RUN nix-env -iA nixpkgs.jq
 RUN nix-env -iA nixpkgs.ps
 RUN mkdir -p /etc/nix
 RUN touch /etc/nix/nix.conf
+RUN rm ipc/node.socket
 RUN echo "experimental-features = nix-command flakes" > /etc/nix/nix.conf && echo "allow-import-from-derivation = true" >> /etc/nix/nix.conf && echo "extra-experimental-features = fetch-closure" >> /etc/nix/nix.conf 
 RUN mkdir /root/sanchonet-demo
 WORKDIR /root/sanchonet-demo
