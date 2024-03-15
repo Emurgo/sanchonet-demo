@@ -49,35 +49,6 @@ run-demo:
   ) | jq -s > "$BULK_CREDS"
   cp "$STAKE_POOL_DIR"/no-deploy/*.skey "$STAKE_POOL_DIR"/deploy/*.vkey "$STAKE_POOL_DIR"
   echo "start cardano-node in the background. Run \"just stop\" to stop"
-  echo "moving genesis utxo..."
-  sleep 1
-  BYRON_SIGNING_KEY="$KEY_DIR"/utxo-keys/shelley.000.skey ERA_CMD="alonzo" nix run .#job-move-genesis-utxo
-  sleep 3
-  echo "registering stake pools..."
-  sleep 1
-  POOL_RELAY=sanchonet.local POOL_RELAY_PORT=3001 ERA_CMD="alonzo" nix run .#job-register-stake-pools
-  sleep 160
-  echo "forking to babbage..."
-  just sync-status
-  MAJOR_VERSION=7 ERA_CMD="alonzo" nix run .#job-update-proposal-hard-fork
-  sleep 160
-  echo "forking to babbage (intra-era)..."
-  just sync-status
-  MAJOR_VERSION=8 ERA_CMD="babbage" nix run .#job-update-proposal-hard-fork
-  sleep 160
-  echo "forking to conway..."
-  just sync-status
-  MAJOR_VERSION=9 ERA_CMD="babbage" nix run .#job-update-proposal-hard-fork
-  sleep 160
-  just sync-status
-  echo -e "\n\n"
-  echo "In conway era..."
-  echo -e "\n\n"
-  just register-drep
-  sleep 10
-  just vote-cc
-  sleep 160
-  cardano-cli-ng conway query gov-state --testnet-magic 42|jq .enactState.committee
 
 vote-constitution:
   #!/usr/bin/env bash
