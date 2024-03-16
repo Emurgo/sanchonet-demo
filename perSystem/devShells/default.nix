@@ -20,8 +20,9 @@
           CARDANO_NODE_SOCKET_PATH = "./ipc/node.socket";
           USE_ENCRYPTION = false;
           UNSTABLE = true;
+          UNSTABLE_LIB = true;
         };
-        extraPkgs = [config.packages.run-cardano-node pkgs.asciinema pkgs.fx pkgs.coreutils];
+        extraPkgs = [config.packages.run-cardano-node pkgs.asciinema pkgs.fx];
       };
     };
     #cardano-parts.pkgs.cardano-cli = flake.inputs.cardano-cli-ng.legacyPackages.${system}.cardano-cli;
