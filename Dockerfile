@@ -16,7 +16,4 @@ RUN nix build .#cardano-node-ng -o cardano-node-ng-build
 RUN nix build .#cardano-cli -o cardano-cli-build
 ENV PATH="/root/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/root/sanchonet-demo/cardano-cli-ng-build/bin:/root/sanchonet-demo/cardano-node-ng-build/bin:/root/sanchonet-demo/cardano-cli-build/bin$PATH"
 RUN direnv allow
-RUN just run-demo
-RUN cardano-cli-ng address build --testnet-magic 42 --payment-verification-key-file state-demo/envs/custom/utxo-keys/rich-utxo.vkey
-RUN sleep 30
-ENTRYPOINT ["nix", "run" ,".#run-cardano-node" ,"&" ,"echo", "$!" ,">" ,"cardano.pid"] 
+CMD nix develop .# --command just run-demo
