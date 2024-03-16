@@ -79,8 +79,6 @@ run-demo:
   just register-drep
   sleep 10
   just vote-cc
-  sleep 160
-  cardano-cli-ng conway query gov-state --testnet-magic 42|jq .enactState.committee
 
 vote-constitution:
   #!/usr/bin/env bash
