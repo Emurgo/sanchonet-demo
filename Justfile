@@ -39,9 +39,7 @@ run-demo:
   export BULK_CREDS=state-demo/bulk-creds.json
   export PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo
   export STAKE_POOL_DIR=state-demo/stake-pools
-  echo "generating custom node config"
   SECURITY_PARAM=8 SLOT_LENGTH=100 START_TIME=$(date --utc +"%Y-%m-%dT%H:%M:%SZ" --date " now + 30 seconds") nix run .#job-gen-custom-node-config
-  echo "generating payment key"
   export PAYMENT_ADDRESS=$(cardano-cli-ng address build --testnet-magic 42 --payment-verification-key-file "$PAYMENT_KEY".vkey)
   echo "generating stake pools credentials..."
   nix run .#job-create-stake-pool-keys
@@ -51,6 +49,37 @@ run-demo:
   ) | jq -s > "$BULK_CREDS"
   cp "$STAKE_POOL_DIR"/no-deploy/*.skey "$STAKE_POOL_DIR"/deploy/*.vkey "$STAKE_POOL_DIR"
   echo "start cardano-node in the background. Run \"just stop\" to stop"
+  NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./node.socket nohup nix run .#run-cardano-node & echo $! > cardano.pid &
+  sleep 30
+  echo "moving genesis utxo..."
+  sleep 1
+  BYRON_SIGNING_KEY="$KEY_DIR"/utxo-keys/shelley.000.skey ERA_CMD="alonzo" nix run .#job-move-genesis-utxo
+  sleep 3
+  echo "registering stake pools..."
+  sleep 1
+  POOL_RELAY=sanchonet.local POOL_RELAY_PORT=3001 ERA_CMD="alonzo" nix run .#job-register-stake-pools
+  sleep 160
+  echo "forking to babbage..."
+  just sync-status
+  MAJOR_VERSION=7 ERA_CMD="alonzo" nix run .#job-update-proposal-hard-fork
+  sleep 160
+  echo "forking to babbage (intra-era)..."
+  just sync-status
+  MAJOR_VERSION=8 ERA_CMD="babbage" nix run .#job-update-proposal-hard-fork
+  sleep 160
+  echo "forking to conway..."
+  just sync-status
+  MAJOR_VERSION=9 ERA_CMD="babbage" nix run .#job-update-proposal-hard-fork
+  sleep 160
+  just sync-status
+  echo -e "\n\n"
+  echo "In conway era..."
+  echo -e "\n\n"
+  just register-drep
+  sleep 10
+  just vote-cc
+  sleep 160
+  cardano-cli-ng conway query gov-state --testnet-magic 42|jq .enactState.committee
 
 vote-constitution:
   #!/usr/bin/env bash
@@ -151,7 +180,7 @@ stop:
 start:
   #!/usr/bin/env bash
   export BULK_CREDS=state-demo/bulk-creds.json
-  DATA_DIR=state-demo NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./ipc/node.socket nohup nix run .#run-cardano-node & echo $! > cardano.pid &
+  DATA_DIR=state-demo NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./node.socket nohup nix run .#run-cardano-node & echo $! > cardano.pid &
 
 sync-status:
   cardano-cli-ng query tip --testnet-magic 42
