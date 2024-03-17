@@ -77,8 +77,6 @@ run-demo:
   echo "In conway era..."
   echo -e "\n\n"
   just register-drep
-  sleep 10
-  just vote-cc
 
 vote-constitution:
   #!/usr/bin/env bash
