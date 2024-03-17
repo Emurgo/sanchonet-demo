@@ -17,7 +17,7 @@ show-flake:
 
 run-sancho:
   #!/usr/bin/env bash
-  DATA_DIR=~/.local/share/cardano ENVIRONMENT=sanchonet SOCKET_PATH="./sancho-public/node.socket" nix run .#run-cardano-node
+  DATA_DIR=~/.local/share/cardano ENVIRONMENT=sanchonet SOCKET_PATH="./sancho-public/node.socket" nix run --omit ./ipc .#run-cardano-node
 
 run-demo:
   #!/usr/bin/env bash
@@ -40,37 +40,37 @@ run-demo:
   export PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo
   export STAKE_POOL_DIR=state-demo/stake-pools
   export TMPDIR=/tmp
-  SECURITY_PARAM=8 SLOT_LENGTH=100 START_TIME=$(date --utc +"%Y-%m-%dT%H:%M:%SZ" --date " now + 30 seconds") nix run .#job-gen-custom-node-config
+  SECURITY_PARAM=8 SLOT_LENGTH=100 START_TIME=$(date --utc +"%Y-%m-%dT%H:%M:%SZ" --date " now + 30 seconds") nix run --omit ./ipc .#job-gen-custom-node-config
   export PAYMENT_ADDRESS=$(cardano-cli-ng address build --testnet-magic 42 --payment-verification-key-file "$PAYMENT_KEY".vkey)
   echo "generating stake pools credentials..."
-  nix run .#job-create-stake-pool-keys
+  nix run --omit ./ipc .#job-create-stake-pool-keys
   (
     jq -r '.[]' < "$KEY_DIR"/delegate-keys/bulk.creds.bft.json
     jq -r '.[]' < "$STAKE_POOL_DIR"/no-deploy/bulk.creds.pools.json
   ) | jq -s > "$BULK_CREDS"
   cp "$STAKE_POOL_DIR"/no-deploy/*.skey "$STAKE_POOL_DIR"/deploy/*.vkey "$STAKE_POOL_DIR"
   echo "start cardano-node in the background. Run \"just stop\" to stop"
-  NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./ipc/node.socket nohup nix run .#run-cardano-node & echo $! > cardano.pid &
+  NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./ipc/node.socket nohup nix run --omit ./ipc .#run-cardano-node & echo $! > cardano.pid &
   sleep 30
   echo "moving genesis utxo..."
   sleep 1
-  BYRON_SIGNING_KEY="$KEY_DIR"/utxo-keys/shelley.000.skey ERA_CMD="alonzo" nix run .#job-move-genesis-utxo
+  BYRON_SIGNING_KEY="$KEY_DIR"/utxo-keys/shelley.000.skey ERA_CMD="alonzo" nix run --omit ./ipc .#job-move-genesis-utxo
   sleep 3
   echo "registering stake pools..."
   sleep 1
-  POOL_RELAY=sanchonet.local POOL_RELAY_PORT=3001 ERA_CMD="alonzo" nix run .#job-register-stake-pools
+  POOL_RELAY=sanchonet.local POOL_RELAY_PORT=3001 ERA_CMD="alonzo" nix run --omit ./ipc .#job-register-stake-pools
   sleep 160
   echo "forking to babbage..."
   just sync-status
-  MAJOR_VERSION=7 ERA_CMD="alonzo" nix run .#job-update-proposal-hard-fork
+  MAJOR_VERSION=7 ERA_CMD="alonzo" nix run --omit ./ipc .#job-update-proposal-hard-fork
   sleep 160
   echo "forking to babbage (intra-era)..."
   just sync-status
-  MAJOR_VERSION=8 ERA_CMD="babbage" nix run .#job-update-proposal-hard-fork
+  MAJOR_VERSION=8 ERA_CMD="babbage" nix run --omit ./ipc .#job-update-proposal-hard-fork
   sleep 160
   echo "forking to conway..."
   just sync-status
-  MAJOR_VERSION=9 ERA_CMD="babbage" nix run .#job-update-proposal-hard-fork
+  MAJOR_VERSION=9 ERA_CMD="babbage" nix run --omit ./ipc .#job-update-proposal-hard-fork
   sleep 160
   just sync-status
   echo -e "\n\n"
@@ -88,7 +88,7 @@ vote-constitution:
   echo "Submitting change to constitution..."
   echo -e "\n\n"
   sleep 2
-  ACTION=create-constitution GOV_ACTION_DEPOSIT=1000000000 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo STAKE_KEY=state-demo/stake-pools/no-deploy/sancho1-owner-stake TESTNET_MAGIC=42 nix run .#job-submit-gov-action -- "--constitution-hash" "$(cardano-cli-ng conway governance hash anchor-data --text "We the people of Barataria abide by these statutes: 1. Flat Caps are permissible, but cowboy hats are the traditional atire")" "--constitution-url" "https://proposals.sancho.network/1"
+  ACTION=create-constitution GOV_ACTION_DEPOSIT=1000000000 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo STAKE_KEY=state-demo/stake-pools/no-deploy/sancho1-owner-stake TESTNET_MAGIC=42 nix run --omit ./ipc .#job-submit-gov-action -- "--constitution-hash" "$(cardano-cli-ng conway governance hash anchor-data --text "We the people of Barataria abide by these statutes: 1. Flat Caps are permissible, but cowboy hats are the traditional atire")" "--constitution-url" "https://proposals.sancho.network/1"
   sleep 10
   echo -e "\n\n"
   echo "Voting Unanimous with dreps"
@@ -108,7 +108,7 @@ vote-treasury:
   echo "Submitting treasury proposal..."
   echo -e "\n\n"
   sleep 2
-  ACTION=create-treasury-withdrawal GOV_ACTION_DEPOSIT=1000000000 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo STAKE_KEY=state-demo/stake-pools/no-deploy/sancho1-owner-stake TESTNET_MAGIC=42 nix run .#job-submit-gov-action -- --funds-receiving-stake-verification-key-file state-demo/dreps/stake-1.vkey --transfer 5000000
+  ACTION=create-treasury-withdrawal GOV_ACTION_DEPOSIT=1000000000 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo STAKE_KEY=state-demo/stake-pools/no-deploy/sancho1-owner-stake TESTNET_MAGIC=42 nix run --omit ./ipc .#job-submit-gov-action -- --funds-receiving-stake-verification-key-file state-demo/dreps/stake-1.vkey --transfer 5000000
   STAKE_ADDRESS=$(cardano-cli-ng stake-address build --testnet-magic 42 --stake-verification-key-file state-demo/dreps/stake-1.vkey)
   sleep 10
   echo -e "\n\n"
@@ -132,12 +132,12 @@ vote-cc:
   #!/usr/bin/env bash
   export KEY_DIR="state-demo/envs/custom"
   echo "Authorizing new CC keypair..."
-  CC_DIR=state-demo/cc INDEX=1 ERA_CMD="conway" nix run .#job-gen-keys-cc
+  CC_DIR=state-demo/cc INDEX=1 ERA_CMD="conway" nix run --omit ./ipc .#job-gen-keys-cc
   sleep 10
   echo "Submitting CC committee proposal..."
   echo -e "\n\n"
   sleep 10
-  ACTION=update-committee GOV_ACTION_DEPOSIT=1000000000 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo STAKE_KEY=state-demo/stake-pools/no-deploy/sancho1-owner-stake TESTNET_MAGIC=42 nix run .#job-submit-gov-action -- --add-cc-cold-verification-key-file state-demo/cc/cold-1.vkey --epoch 199 --quorum 0.51
+  ACTION=update-committee GOV_ACTION_DEPOSIT=1000000000 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo STAKE_KEY=state-demo/stake-pools/no-deploy/sancho1-owner-stake TESTNET_MAGIC=42 nix run --omit ./ipc .#job-submit-gov-action -- --add-cc-cold-verification-key-file state-demo/cc/cold-1.vkey --epoch 199 --quorum 0.51
   sleep 20
   echo -e "\n\n"
   echo "Voting Unanimous with dreps"
@@ -146,7 +146,7 @@ vote-cc:
   sleep 10
   just submit-vote-spo $(cardano-cli-ng transaction txid --tx-body-file tx-update-committee.txbody) 0 yes
   sleep 180
-  CC_DIR=state-demo/cc INDEX=1 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo TESTNET_MAGIC=42 nix run .#job-register-cc
+  CC_DIR=state-demo/cc INDEX=1 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo TESTNET_MAGIC=42 nix run --omit ./ipc .#job-register-cc
 
 vote-k:
   #!/usr/bin/env bash
@@ -155,7 +155,7 @@ vote-k:
   echo -e "\n\n"
   echo "k: $(cardano-cli-ng conway query protocol-parameters --testnet-magic 42|jq .stakePoolTargetNum)"
   sleep 10
-  ACTION=create-protocol-parameters-update GOV_ACTION_DEPOSIT=1000000000 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo STAKE_KEY=state-demo/stake-pools/no-deploy/sancho1-owner-stake TESTNET_MAGIC=42 nix run .#job-submit-gov-action -- --number-of-pools 1000
+  ACTION=create-protocol-parameters-update GOV_ACTION_DEPOSIT=1000000000 ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo STAKE_KEY=state-demo/stake-pools/no-deploy/sancho1-owner-stake TESTNET_MAGIC=42 nix run --omit ./ipc ./ipc .#job-submit-gov-action -- --number-of-pools 1000
   sleep 20
   echo -e "\n\n"
   echo "Voting Unanimous with dreps"
@@ -177,7 +177,7 @@ stop:
 start:
   #!/usr/bin/env bash
   export BULK_CREDS=state-demo/bulk-creds.json
-  DATA_DIR=state-demo NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./ipc/node.socket nohup nix run .#run-cardano-node & echo $! > cardano.pid &
+  DATA_DIR=state-demo NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./ipc/node.socket nohup nix run --omit ./ipc .#run-cardano-node & echo $! > cardano.pid &
 
 sync-status:
   cardano-cli-ng query tip --testnet-magic 42
@@ -197,11 +197,11 @@ submit-vote-spo actiontx actionid decision:
   export ACTION_TX_ID={{actiontx}}
   export ACTION_TX_INDEX={{actionid}}
   export DECISION={{decision}}
-  ROLE=spo ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo VOTE_KEY=state-demo/stake-pools/no-deploy/sancho1-cold TESTNET_MAGIC=42 nix run .#job-submit-vote
+  ROLE=spo ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo VOTE_KEY=state-demo/stake-pools/no-deploy/sancho1-cold TESTNET_MAGIC=42 nix run --omit ./ipc .#job-submit-vote
   sleep 30
-  ROLE=spo ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo VOTE_KEY=state-demo/stake-pools/no-deploy/sancho2-cold TESTNET_MAGIC=42 nix run .#job-submit-vote
+  ROLE=spo ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo VOTE_KEY=state-demo/stake-pools/no-deploy/sancho2-cold TESTNET_MAGIC=42 nix run --omit ./ipc .#job-submit-vote
   sleep 30
-  ROLE=spo ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo VOTE_KEY=state-demo/stake-pools/no-deploy/sancho3-cold TESTNET_MAGIC=42 nix run .#job-submit-vote
+  ROLE=spo ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo VOTE_KEY=state-demo/stake-pools/no-deploy/sancho3-cold TESTNET_MAGIC=42 nix run --omit ./ipc .#job-submit-vote
   sleep 30
 
 submit-vote-drep actiontx actionid decision:
@@ -210,9 +210,9 @@ submit-vote-drep actiontx actionid decision:
   export ACTION_TX_ID={{actiontx}}
   export ACTION_TX_INDEX={{actionid}}
   export DECISION={{decision}}
-  ROLE=drep ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo VOTE_KEY=state-demo/dreps/drep-1 TESTNET_MAGIC=42 nix run .#job-submit-vote
+  ROLE=drep ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo VOTE_KEY=state-demo/dreps/drep-1 TESTNET_MAGIC=42 nix run --omit ./ipc .#job-submit-vote
   sleep 30
-  ROLE=drep ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo VOTE_KEY=state-demo/dreps/drep-2 TESTNET_MAGIC=42 nix run .#job-submit-vote
+  ROLE=drep ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo VOTE_KEY=state-demo/dreps/drep-2 TESTNET_MAGIC=42 nix run --omit ./ipc .#job-submit-vote
   sleep 30
 
 submit-vote-cc actiontx actionid decision:
@@ -221,24 +221,24 @@ submit-vote-cc actiontx actionid decision:
   export ACTION_TX_ID={{actiontx}}
   export ACTION_TX_INDEX={{actionid}}
   export DECISION={{decision}}
-  ROLE=cc ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo VOTE_KEY=state-demo/cc/hot-1 TESTNET_MAGIC=42 nix run .#job-submit-vote
+  ROLE=cc ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo VOTE_KEY=state-demo/cc/hot-1 TESTNET_MAGIC=42 nix run --omit ./ipc .#job-submit-vote
   sleep 30
 
 register-drep:
   #!/usr/bin/env bash
   export KEY_DIR="state-demo/envs/custom"
-  DREP_DIR=state-demo/dreps STAKE_DEPOSIT=2000000 DREP_DEPOSIT=2000000 VOTING_POWER=123456789 INDEX=1 POOL_KEY=state-demo/stake-pools/no-deploy/sancho1-cold ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo TESTNET_MAGIC=42 nix run .#job-register-drep
+  DREP_DIR=state-demo/dreps STAKE_DEPOSIT=2000000 DREP_DEPOSIT=2000000 VOTING_POWER=123456789 INDEX=1 POOL_KEY=state-demo/stake-pools/no-deploy/sancho1-cold ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo TESTNET_MAGIC=42 nix run --omit ./ipc .#job-register-drep
   sleep 30
-  DREP_DIR=state-demo/dreps STAKE_DEPOSIT=2000000 DREP_DEPOSIT=2000000 VOTING_POWER=987654321 INDEX=2 POOL_KEY=state-demo/stake-pools/no-deploy/sancho2-cold ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo TESTNET_MAGIC=42 nix run .#job-register-drep
+  DREP_DIR=state-demo/dreps STAKE_DEPOSIT=2000000 DREP_DEPOSIT=2000000 VOTING_POWER=987654321 INDEX=2 POOL_KEY=state-demo/stake-pools/no-deploy/sancho2-cold ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo TESTNET_MAGIC=42 nix run --omit ./ipc .#job-register-drep
 
 delegate-drep:
   #!/usr/bin/env bash
   export KEY_DIR="state-demo/envs/custom"
-  DREP_KEY=state-demo/dreps/drep-1 STAKE_KEY=state-demo/stake-pools/sancho1-owner-stake POOL_KEY=state-demo/stake-pools/sp-1-cold ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo TESTNET_MAGIC=42 nix run .#job-delegate-drep
+  DREP_KEY=state-demo/dreps/drep-1 STAKE_KEY=state-demo/stake-pools/sancho1-owner-stake POOL_KEY=state-demo/stake-pools/sp-1-cold ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo TESTNET_MAGIC=42 nix run --omit ./ipc .#job-delegate-drep
   sleep 30
-  DREP_KEY=state-demo/dreps/drep-1 STAKE_KEY=state-demo/stake-pools/sancho2-owner-stake POOL_KEY=state-demo/stake-pools/sp-2-cold ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo TESTNET_MAGIC=42 nix run .#job-delegate-drep
+  DREP_KEY=state-demo/dreps/drep-1 STAKE_KEY=state-demo/stake-pools/sancho2-owner-stake POOL_KEY=state-demo/stake-pools/sp-2-cold ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo TESTNET_MAGIC=42 nix run --omit ./ipc .#job-delegate-drep
   sleep 30
-  DREP_KEY=state-demo/dreps/drep-1 STAKE_KEY=state-demo/stake-pools/sancho3-owner-stake POOL_KEY=state-demo/stake-pools/sp-3-cold ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo TESTNET_MAGIC=42 nix run .#job-delegate-drep
+  DREP_KEY=state-demo/dreps/drep-1 STAKE_KEY=state-demo/stake-pools/sancho3-owner-stake POOL_KEY=state-demo/stake-pools/sp-3-cold ERA_CMD="conway" PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo TESTNET_MAGIC=42 nix run --omit ./ipc .#job-delegate-drep
 
 demo-drep:
   #!/usr/bin/env bash
