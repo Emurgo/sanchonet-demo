@@ -77,9 +77,9 @@ run-demo:
   echo "In conway era..."
   echo -e "\n\n"
   just register-drep
-  sleep 10
+  sleep 1000
   just vote-cc
-  sleep 160
+  sleep 600
   cardano-cli-ng conway query gov-state --testnet-magic 42|jq .enactState.committee
 
 vote-constitution:
