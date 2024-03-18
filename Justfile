@@ -50,12 +50,12 @@ run-demo:
   ) | jq -s > "$BULK_CREDS"
   cp "$STAKE_POOL_DIR"/no-deploy/*.skey "$STAKE_POOL_DIR"/deploy/*.vkey "$STAKE_POOL_DIR"
   echo "start cardano-node in the background. Run \"just stop\" to stop"
-  NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./ipc/node.socket nohup nix run .#run-cardano-node & echo $! > cardano.pid &
-  sleep 30
+  NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./ipc/node.socket nix run .#run-cardano-node & echo $! > cardano.pid &
+  sleep 1000
   echo "moving genesis utxo..."
   sleep 1
   BYRON_SIGNING_KEY="$KEY_DIR"/utxo-keys/shelley.000.skey ERA_CMD="alonzo" nix run .#job-move-genesis-utxo
-  sleep 3
+  sleep 30
   echo "registering stake pools..."
   sleep 1
   POOL_RELAY=sanchonet.local POOL_RELAY_PORT=3001 ERA_CMD="alonzo" nix run .#job-register-stake-pools
@@ -63,11 +63,11 @@ run-demo:
   echo "forking to babbage..."
   just sync-status
   MAJOR_VERSION=7 ERA_CMD="alonzo" nix run .#job-update-proposal-hard-fork
-  sleep 160
+  sleep 500
   echo "forking to babbage (intra-era)..."
   just sync-status
   MAJOR_VERSION=8 ERA_CMD="babbage" nix run .#job-update-proposal-hard-fork
-  sleep 160
+  sleep 500
   echo "forking to conway..."
   just sync-status
   MAJOR_VERSION=9 ERA_CMD="babbage" nix run .#job-update-proposal-hard-fork
@@ -77,7 +77,7 @@ run-demo:
   echo "In conway era..."
   echo -e "\n\n"
   just register-drep
-  sleep 1000
+  sleep 600
   just vote-cc
   sleep 600
   cardano-cli-ng conway query gov-state --testnet-magic 42|jq .enactState.committee
@@ -104,7 +104,7 @@ vote-constitution:
   just submit-vote-cc $(cardano-cli-ng transaction txid --tx-body-file tx-create-constitution.txbody) 0 yes
   sleep 230
   echo "Checking Constitution Hash..."
-  cardano-cli-ng conway query constitution --testnet-magic 42
+  cardano-cli-ng conway query constitution --testnet-magic 42 --socket-path ./ipc/node.socket
 
 vote-treasury:
   #!/usr/bin/env bash
@@ -124,7 +124,7 @@ vote-treasury:
   echo "Voting Unanimous with CC"
   just submit-vote-cc $(cardano-cli-ng transaction txid --tx-body-file tx-create-treasury-withdrawal.txbody) 0 yes
   sleep 230
-  cardano-cli-ng conway query stake-address-info --testnet-magic 42 --address "$STAKE_ADDRESS"
+  cardano-cli-ng conway query stake-address-info --testnet-magic 42 --address "$STAKE_ADDRESS" 
 
 check-stake-drep:
   #!/usr/bin/env bash
@@ -165,7 +165,7 @@ vote-k:
   echo "Voting Unanimous with dreps"
   echo -e "\n\n"
   just submit-vote-drep $(cardano-cli-ng transaction txid --tx-body-file tx-create-protocol-parameters-update.txbody) 0 yes
-  sleep 10
+  sleep 100
   echo "Voting Unanimous with CC"
   just submit-vote-cc $(cardano-cli-ng transaction txid --tx-body-file tx-create-protocol-parameters-update.txbody) 0 yes
   sleep 230
@@ -181,7 +181,7 @@ stop:
 start:
   #!/usr/bin/env bash
   export BULK_CREDS=state-demo/bulk-creds.json
-  DATA_DIR=state-demo NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./ipc/node.socket nohup nix run .#run-cardano-node & echo $! > cardano.pid &
+  DATA_DIR=state-demo NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=./ipc/node.socket nix run .#run-cardano-node & echo $! > cardano.pid &
 
 sync-status:
   cardano-cli-ng query tip --testnet-magic 42 --socket-path ./ipc/node.socket
