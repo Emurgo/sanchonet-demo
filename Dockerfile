@@ -7,8 +7,8 @@ RUN mkdir -p /etc/nix
 RUN touch /etc/nix/nix.conf
 RUN echo "donotUnpack = true" > /etc/nix/nix.conf && echo "experimental-features = nix-command flakes" > /etc/nix/nix.conf && echo "allow-import-from-derivation = true" >> /etc/nix/nix.conf && echo "extra-experimental-features = fetch-closure" >> /etc/nix/nix.conf 
 RUN mkdir /root/sanchonet-demo
+RUN mkdir /root/ipc
 WORKDIR /root/sanchonet-demo
-RUN mkdir ipc
 RUN cat /etc/nix/nix.conf
 COPY . .
 RUN nix build .#cardano-cli-ng -o cardano-cli-ng-build
