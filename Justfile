@@ -104,7 +104,7 @@ vote-constitution:
   just submit-vote-cc $(cardano-cli-ng transaction txid --tx-body-file tx-create-constitution.txbody) 0 yes
   sleep 230
   echo "Checking Constitution Hash..."
-  cardano-cli-ng conway query constitution --testnet-magic 42 --socket-path ./ipc/node.socket
+  cardano-cli-ng conway query constitution --testnet-magic 42 --socket-path /root/ipc/node.socket
 
 vote-treasury:
   #!/usr/bin/env bash
