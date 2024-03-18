@@ -14,6 +14,6 @@ COPY . .
 RUN nix build .#cardano-cli-ng -o cardano-cli-ng-build
 RUN nix build .#cardano-node-ng -o cardano-node-ng-build
 RUN nix build .#cardano-cli -o cardano-cli-build
-ENV PATH="/root/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/root/sanchonet-demo/cardano-cli-ng-build/bin:/root/sanchonet-demo/cardano-node-ng-build/bin:/root/sanchonet-demo/cardano-cli-build/bin$PATH"
+ENV PATH="/root/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/root/sanchonet-demo/cardano-cli-ng-build/bin:/root/sanchonet-demo/cardano-node-ng-build/bin:/root/sanchonet-demo/cardano-cli-build/bin:$PATH"
 RUN direnv allow
-CMD nix develop .# --command just run-demo
+CMD nix develop .# --command just run-demo &&  NODE_CONFIG=state-demo/rundir/node-config.json NODE_TOPOLOGY=state-demo/rundir/topology.json SOCKET_PATH=/root/ipc/node.socket nix run .#run-cardano-node 
