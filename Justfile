@@ -36,7 +36,6 @@ run-demo:
   export NUM_GENESIS_KEYS=3
   export POOL_NAMES="sancho1 sancho2 sancho3"
   export GENESIS_DIR="$DATA_DIR"
-  export TMPDIR="/tmp"
   export BULK_CREDS=state-demo/bulk-creds.json
   export PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo
   export STAKE_POOL_DIR=state-demo/stake-pools
@@ -49,11 +48,12 @@ run-demo:
     jq -r '.[]' < "$STAKE_POOL_DIR"/no-deploy/bulk.creds.pools.json
   ) | jq -s > "$BULK_CREDS"
   cp "$STAKE_POOL_DIR"/no-deploy/*.skey "$STAKE_POOL_DIR"/deploy/*.vkey "$STAKE_POOL_DIR"
-  sleep 30
+ 
+run-era:
   echo "moving genesis utxo..."
-  sleep 1
+  sleep 30
   BYRON_SIGNING_KEY="$KEY_DIR"/utxo-keys/shelley.000.skey ERA_CMD="alonzo" nix run .#job-move-genesis-utxo
-  sleep 3
+  sleep 10
   echo "registering stake pools..."
   sleep 1
   POOL_RELAY=sanchonet.local POOL_RELAY_PORT=3001 ERA_CMD="alonzo" nix run .#job-register-stake-pools
