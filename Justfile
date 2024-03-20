@@ -36,6 +36,7 @@ run-demo:
   export NUM_GENESIS_KEYS=3
   export POOL_NAMES="sancho1 sancho2 sancho3"
   export GENESIS_DIR="$DATA_DIR"
+  export TMPDIR="/tmp"
   export BULK_CREDS=state-demo/bulk-creds.json
   export PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo
   export STAKE_POOL_DIR=state-demo/stake-pools
