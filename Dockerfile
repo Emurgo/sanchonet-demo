@@ -21,5 +21,6 @@ ENV UNSTABLE_LIB=true \
     SOCKET_PATH=/root/ipc/node.socket
 ENV PATH="/root/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/root/sanchonet-demo/cardano-cli-ng-build/bin:/root/sanchonet-demo/cardano-node-ng-build/bin:/root/sanchonet-demo/cardano-cli-build/bin:$PATH"
 RUN direnv allow
+RUN which nohup
 RUN nix develop .# --command just run-demo
-CMD [ "nohup", "nix run .#run-cardano-node","&","exec", "nix develop .# --command just run-era" ]
+CMD [ "/root/.nix-profile/bin/nohup", "/root/.nix-profile/bin/nix run .#run-cardano-node","&","exec", "/root/.nix-profile/bin/nix develop .# --command just run-era" ]
