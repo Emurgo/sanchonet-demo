@@ -14,7 +14,12 @@ COPY . .
 RUN nix build .#cardano-cli-ng -o cardano-cli-ng-build
 RUN nix build .#cardano-node-ng -o cardano-node-ng-build
 RUN nix build .#cardano-cli -o cardano-cli-build
+ENV UNSTABLE_LIB=true \
+    UNSTABLE=true \
+    NODE_CONFIG=state-demo/rundir/node-config.json \
+    NODE_TOPOLOGY=state-demo/rundir/topology.json \
+    SOCKET_PATH=/root/ipc/node.socket
 ENV PATH="/root/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/root/sanchonet-demo/cardano-cli-ng-build/bin:/root/sanchonet-demo/cardano-node-ng-build/bin:/root/sanchonet-demo/cardano-cli-build/bin:$PATH"
 RUN direnv allow
 RUN nix develop .# --command just run-demo
-CMD [ "nohup", "export UNSTABLE_LIB=true && export UNSTABLE=true && export NODE_CONFIG=state-demo/rundir/node-config.json && export NODE_TOPOLOGY=state-demo/rundir/topology.json && export SOCKET_PATH=/root/ipc/node.socket && nix run .#run-cardano-node","&&", "nix develop .# --command just run-era" ]
+CMD [ "nohup", "nix run .#run-cardano-node","&","exec", "nix develop .# --command just run-era" ]
