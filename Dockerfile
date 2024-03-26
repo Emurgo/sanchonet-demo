@@ -33,4 +33,4 @@ ENV PATH="/root/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/
 RUN direnv allow
 RUN nix develop .# --command just run-demo 
 RUN nohup bash -c "nix run .#run-cardano-node" &
-CMD tail -f nohup.out
+CMD tail -f /dev/null
