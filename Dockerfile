@@ -32,4 +32,5 @@ ENV UNSTABLE_LIB=true \
 ENV PATH="/root/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/root/sanchonet-demo/cardano-cli-ng-build/bin:/root/sanchonet-demo/cardano-node-ng-build/bin:/root/sanchonet-demo/cardano-cli-build/bin:$PATH"
 RUN direnv allow
 RUN nix develop .# --command just run-demo 
+RUN chmod 755 /root/sanchonet-demo/entrypoint.sh
 CMD ["bash", "-c", "/root/sanchonet-demo/entrypoint.sh"]
