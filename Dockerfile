@@ -14,23 +14,6 @@ COPY . .
 RUN nix build .#cardano-cli-ng -o cardano-cli-ng-build
 RUN nix build .#cardano-node-ng -o cardano-node-ng-build
 RUN nix build .#cardano-cli -o cardano-cli-build
-ENV UNSTABLE_LIB=true \
-    UNSTABLE=true \
-    NODE_CONFIG=state-demo/rundir/node-config.json \
-    NODE_TOPOLOGY=state-demo/rundir/topology.json \
-    SOCKET_PATH=/root/ipc/node.socket \
-    DATA_DIR=state-demo \
-    KEY_DIR="state-demo/envs/custom" \
-    TESTNET_MAGIC=42 \
-    PAYMENT_KEY=state-demo/envs/custom/utxo-keys/rich-utxo \
-    NUM_GENESIS_KEYS=3 \
-    POOL_NAMES="sancho1 sancho2 sancho3" \
-    GENESIS_DIR=state-demo \
-    BULK_CREDS=state-demo/bulk-creds.json \
-    PAYMENT_KEY=state-demo/envs/custom/utxo-keys/rich-utxo \
-    STAKE_POOL_DIR=state-demo/stake-pools
 ENV PATH="/root/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/root/sanchonet-demo/cardano-cli-ng-build/bin:/root/sanchonet-demo/cardano-node-ng-build/bin:/root/sanchonet-demo/cardano-cli-build/bin:$PATH"
 RUN direnv allow
-RUN nix develop .# --command just run-demo 
-RUN chmod 755 /root/sanchonet-demo/entrypoint.sh
-CMD ["bash", "-c", "/root/sanchonet-demo/entrypoint.sh"]
+CMD nix develop .# --command just run-demo &&  export UNSTABLE_LIB="true" && export UNSTABLE="true" && export NODE_CONFIG="state-demo/rundir/node-config.json" && export NODE_TOPOLOGY="state-demo/rundir/topology.json" && export SOCKET_PATH="/root/ipc/node.socket" && nix run .#run-cardano-node
