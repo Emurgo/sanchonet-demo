@@ -53,7 +53,7 @@ run-demo:
 run-era:
   #!/usr/bin/env bash
   echo "moving genesis utxo..."
-  sleep 30
+  sleep 60
   BYRON_SIGNING_KEY="$KEY_DIR"/utxo-keys/shelley.000.skey ERA_CMD="alonzo" nix run .#job-move-genesis-utxo
   sleep 10
   echo "registering stake pools..."
