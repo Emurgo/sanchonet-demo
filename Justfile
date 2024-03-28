@@ -3,7 +3,7 @@ set positional-arguments
 
 export UNSTABLE := "true"
 export UNSTABLE_LIB := "true"
-export DEBUG := "true"
+export DEBUG := "false"
 
 default:
   @just --list
