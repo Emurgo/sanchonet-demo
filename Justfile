@@ -52,6 +52,17 @@ run-demo:
  
 run-era:
   #!/usr/bin/env bash
+  export DATA_DIR=state-demo
+  export KEY_DIR="state-demo/envs/custom"
+  export TESTNET_MAGIC=42
+  export PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo
+  export NUM_GENESIS_KEYS=3
+  export POOL_NAMES="sancho1 sancho2 sancho3"
+  export GENESIS_DIR="$DATA_DIR"
+  export TMPDIR="/tmp"
+  export BULK_CREDS=state-demo/bulk-creds.json
+  export PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo
+  export STAKE_POOL_DIR=state-demo/stake-pools
   echo "moving genesis utxo..."
   sleep 60
   BYRON_SIGNING_KEY="$KEY_DIR"/utxo-keys/shelley.000.skey ERA_CMD="alonzo" nix run .#job-move-genesis-utxo
