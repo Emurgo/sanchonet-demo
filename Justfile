@@ -21,13 +21,6 @@ run-sancho:
 
 run-demo:
   #!/usr/bin/env bash
-  echo stopping cardano-node
-  just stop
-  echo "cleaning state-demo..."
-  if [ -d state-demo ]; then
-    chmod -R +w state-demo
-    rm -rf state-demo
-  fi
   echo "generating state-demo config..."
   export DATA_DIR=state-demo
   export KEY_DIR="state-demo/envs/custom"
@@ -63,10 +56,11 @@ run-era:
   export BULK_CREDS=state-demo/bulk-creds.json
   export PAYMENT_KEY="$KEY_DIR"/utxo-keys/rich-utxo
   export STAKE_POOL_DIR=state-demo/stake-pools
+  sleep 30
   echo "moving genesis utxo..."
-  sleep 60
+  sleep 1
   BYRON_SIGNING_KEY="$KEY_DIR"/utxo-keys/shelley.000.skey ERA_CMD="alonzo" nix run .#job-move-genesis-utxo
-  sleep 10
+  sleep 3
   echo "registering stake pools..."
   sleep 1
   POOL_RELAY=sanchonet.local POOL_RELAY_PORT=3001 ERA_CMD="alonzo" nix run .#job-register-stake-pools
