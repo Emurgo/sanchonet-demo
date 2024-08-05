@@ -8,6 +8,7 @@ RUN touch /etc/nix/nix.conf
 RUN echo "donotUnpack = true" > /etc/nix/nix.conf && echo "experimental-features = nix-command flakes" > /etc/nix/nix.conf && echo "allow-import-from-derivation = true" >> /etc/nix/nix.conf && echo "extra-experimental-features = fetch-closure" >> /etc/nix/nix.conf 
 RUN mkdir /root/test-node
 RUN mkdir /root/ipc
+RUN export TMPDIR="/tmp"
 WORKDIR /root/test-node
 RUN cat /etc/nix/nix.conf
 COPY . .
